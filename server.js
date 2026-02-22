@@ -258,7 +258,7 @@ function getStatDisplayName(stat, value) {
 }
 
 // ============================================
-// Trakt Stats Fetcher
+// Trakt Stats Fetcher (UPDATED with anti-block headers)
 // ============================================
 
 async function fetchTraktStats(imdbId, type, clientId) {
@@ -282,7 +282,10 @@ async function fetchTraktStats(imdbId, type, clientId) {
       headers: {
         'Content-Type': 'application/json',
         'trakt-api-version': '2',
-        'trakt-api-key': clientId
+        'trakt-api-key': clientId,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9'
       }
     });
 
@@ -309,7 +312,7 @@ async function fetchTraktStats(imdbId, type, clientId) {
 }
 
 // ============================================
-// Get User Rating Function (FIXED VERSION)
+// Get User Rating Function (UPDATED with anti-block headers)
 // ============================================
 
 async function getUserRating(imdbId, type, accessToken, clientId, season = null, episode = null) {
@@ -337,7 +340,10 @@ async function getUserRating(imdbId, type, accessToken, clientId, season = null,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
           'trakt-api-version': '2',
-          'trakt-api-key': clientId
+          'trakt-api-key': clientId,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9'
         }
       });
 
@@ -378,7 +384,10 @@ async function getUserRating(imdbId, type, accessToken, clientId, season = null,
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
             'trakt-api-version': '2',
-            'trakt-api-key': clientId
+            'trakt-api-key': clientId,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US,en;q=0.9'
           }
         });
 
@@ -422,7 +431,10 @@ async function getUserRating(imdbId, type, accessToken, clientId, season = null,
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
             'trakt-api-version': '2',
-            'trakt-api-key': clientId
+            'trakt-api-key': clientId,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US,en;q=0.9'
           }
         });
 
@@ -748,7 +760,7 @@ async function formatRatingTitle(pattern, ratingStyle, rating, title, type, seas
 }
 
 // ============================================
-// OAuth Routes with Upstash Support
+// OAuth Routes with Upstash Support (UPDATED with clientSecret)
 // ============================================
 
 app.get('/oauth/initiate', (req, res) => {
@@ -768,25 +780,45 @@ app.get('/oauth/initiate', (req, res) => {
   res.redirect(traktAuthUrl);
 });
 
-// Updated OAuth exchange with Upstash support
+// Updated OAuth exchange with clientSecret support
 app.post('/oauth/exchange', async (req, res) => {
-  const { code, clientId, upstashUrl, upstashToken } = req.body;
+  const { code, clientId, clientSecret, upstashUrl, upstashToken } = req.body;
+
+  if (!clientSecret) {
+    return res.status(400).json({ success: false, error: 'Client Secret is required' });
+  }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch('https://api.trakt.tv/oauth/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Origin': 'https://trakt.tv',
+        'Referer': 'https://trakt.tv/',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
       body: JSON.stringify({
         code,
         client_id: clientId,
-        client_secret: '',
+        client_secret: clientSecret,
         redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
         grant_type: 'authorization_code'
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('[TRAKT OAUTH] Error response:', response.status, errorText.substring(0, 500));
       throw new Error(`Trakt API error: ${response.status} - ${errorText}`);
     }
 
@@ -797,7 +829,10 @@ app.post('/oauth/exchange', async (req, res) => {
       headers: {
         'Authorization': `Bearer ${tokens.access_token}`,
         'trakt-api-version': '2',
-        'trakt-api-key': clientId
+        'trakt-api-key': clientId,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9'
       }
     });
 
@@ -863,30 +898,46 @@ app.post('/oauth/exchange', async (req, res) => {
   }
 });
 
-// Token refresh endpoint
+// Token refresh endpoint with clientSecret support (fixed storage variable)
 app.post('/oauth/refresh', async (req, res) => {
   try {
-    const { refreshToken, clientId, upstashUrl, upstashToken, configId } = req.body;
+    const { refreshToken, clientId, clientSecret, upstashUrl, upstashToken, configId, storage } = req.body;
 
-    if (!refreshToken || !clientId) {
-      return res.status(400).json({ error: 'Refresh token and Client ID are required' });
+    if (!refreshToken || !clientId || !clientSecret) {
+      return res.status(400).json({ error: 'Refresh token, Client ID, and Client Secret are required' });
     }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     // Refresh tokens
     const response = await fetch('https://api.trakt.tv/oauth/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Origin': 'https://trakt.tv',
+        'Referer': 'https://trakt.tv/',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
       body: JSON.stringify({
         refresh_token: refreshToken,
         client_id: clientId,
-        client_secret: '',
+        client_secret: clientSecret,
         redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
         grant_type: 'refresh_token'
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('[TRAKT OAUTH] Error response:', response.status, errorText.substring(0, 500));
       throw new Error(`Trakt API error: ${response.status} - ${errorText}`);
     }
 
@@ -898,7 +949,10 @@ app.post('/oauth/refresh', async (req, res) => {
       headers: {
         'Authorization': `Bearer ${tokens.access_token}`,
         'trakt-api-version': '2',
-        'trakt-api-key': clientId
+        'trakt-api-key': clientId,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9'
       }
     });
 
@@ -1051,15 +1105,15 @@ app.post('/upstash/test', async (req, res) => {
 });
 
 // ============================================
-// Token Refresh Helper
+// Token Refresh Helper (UPDATED with clientSecret)
 // ============================================
 
 async function refreshTraktTokens(userConfig) {
   try {
-    const { refresh_token, clientId, upstashUrl, upstashToken, configId, storage } = userConfig;
+    const { refresh_token, clientId, clientSecret, upstashUrl, upstashToken, configId, storage } = userConfig;
 
-    if (!refresh_token || !clientId) {
-      console.log('[TOKEN REFRESH] Missing refresh token or clientId');
+    if (!refresh_token || !clientId || !clientSecret) {
+      console.log('[TOKEN REFRESH] Missing refresh token, clientId, or clientSecret');
       return null;
     }
 
@@ -1071,20 +1125,36 @@ async function refreshTraktTokens(userConfig) {
       throw new Error('URL storage: Cannot refresh without valid refresh token');
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch('https://api.trakt.tv/oauth/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Origin': 'https://trakt.tv',
+        'Referer': 'https://trakt.tv/',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
       body: JSON.stringify({
         refresh_token: refresh_token,
         client_id: clientId,
-        client_secret: '',
+        client_secret: clientSecret,
         redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
         grant_type: 'refresh_token'
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('[TOKEN REFRESH] Error response:', response.status, errorText.substring(0, 500));
       throw new Error(`Token refresh failed: ${response.status} - ${errorText}`);
     }
 
@@ -1102,7 +1172,10 @@ async function refreshTraktTokens(userConfig) {
       headers: {
         'Authorization': `Bearer ${newTokens.access_token}`,
         'trakt-api-version': '2',
-        'trakt-api-key': clientId
+        'trakt-api-key': clientId,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9'
       }
     });
 
@@ -1301,7 +1374,7 @@ async function getUserConfigWithTokens(config) {
 }
 
 // ============================================
-// Delete Older Watched States Function
+// Delete Older Watched States Function (UPDATED with anti-block headers)
 // ============================================
 
 async function deleteOlderWatchedStates(imdbId, type, accessToken, clientId, title, season = null, episode = null) {
@@ -1324,7 +1397,10 @@ async function deleteOlderWatchedStates(imdbId, type, accessToken, clientId, tit
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
           'trakt-api-version': '2',
-          'trakt-api-key': clientId
+          'trakt-api-key': clientId,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9'
         },
         body: JSON.stringify({
           movies: [{ ids: { imdb: imdbId } }]
@@ -1346,7 +1422,10 @@ async function deleteOlderWatchedStates(imdbId, type, accessToken, clientId, tit
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
           'trakt-api-version': '2',
-          'trakt-api-key': clientId
+          'trakt-api-key': clientId,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9'
         },
         body: JSON.stringify({
           shows: [{
@@ -1376,7 +1455,7 @@ async function deleteOlderWatchedStates(imdbId, type, accessToken, clientId, tit
 }
 
 // ============================================
-// Trakt API Function (UPDATED with Remove Rating)
+// Trakt API Function (UPDATED with anti-block headers for all actions)
 // ============================================
 
 async function makeTraktRequest(action, type, imdbId, title, userConfig, rating = null, season = null, episode = null) {
@@ -1390,6 +1469,17 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
     let message = '';
     let response;
     let cleanupDone = false;
+
+    // Common headers for all API calls
+    const baseHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+      'trakt-api-version': '2',
+      'trakt-api-key': clientId,
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json',
+      'Accept-Language': 'en-US,en;q=0.9'
+    };
 
     switch (action) {
       case 'mark_watched':
@@ -1418,12 +1508,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         if (type === 'movie') {
           response = await fetch('https://api.trakt.tv/sync/history', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               movies: [{ ids: { imdb: imdbId } }]
             })
@@ -1441,12 +1526,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         } else if (type === 'series') {
           response = await fetch('https://api.trakt.tv/sync/history', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               shows: [{
                 ids: { imdb: imdbId },
@@ -1476,12 +1556,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         if (type === 'movie') {
           response = await fetch('https://api.trakt.tv/sync/history/remove', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               movies: [{ ids: { imdb: imdbId } }]
             })
@@ -1496,12 +1571,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         } else if (type === 'series' && season && episode) {
           response = await fetch('https://api.trakt.tv/sync/history/remove', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               shows: [{
                 ids: { imdb: imdbId },
@@ -1527,12 +1597,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
       case 'mark_season_watched':
         response = await fetch('https://api.trakt.tv/sync/history', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'trakt-api-version': '2',
-            'trakt-api-key': clientId
-          },
+          headers: baseHeaders,
           body: JSON.stringify({
             shows: [{
               ids: { imdb: imdbId },
@@ -1554,12 +1619,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
       case 'mark_series_watched':
         response = await fetch('https://api.trakt.tv/sync/history', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'trakt-api-version': '2',
-            'trakt-api-key': clientId
-          },
+          headers: baseHeaders,
           body: JSON.stringify({
             shows: [{ ids: { imdb: imdbId } }]
           })
@@ -1597,12 +1657,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
               // Now mark as watched
               const watchResponse = await fetch('https://api.trakt.tv/sync/history', {
                 method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`,
-                  'trakt-api-version': '2',
-                  'trakt-api-key': clientId
-                },
+                headers: baseHeaders,
                 body: JSON.stringify({
                   movies: [{ ids: { imdb: imdbId } }]
                 })
@@ -1622,12 +1677,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
           // Now do the rating
           response = await fetch('https://api.trakt.tv/sync/ratings', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               movies: [{
                 ids: { imdb: imdbId },
@@ -1668,12 +1718,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
                 // Now mark as watched
                 const watchResponse = await fetch('https://api.trakt.tv/sync/history', {
                   method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                    'trakt-api-version': '2',
-                    'trakt-api-key': clientId
-                  },
+                  headers: baseHeaders,
                   body: JSON.stringify({
                     shows: [{
                       ids: { imdb: imdbId },
@@ -1700,12 +1745,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
 
             response = await fetch('https://api.trakt.tv/sync/ratings', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-                'trakt-api-version': '2',
-                'trakt-api-key': clientId
-              },
+              headers: baseHeaders,
               body: JSON.stringify({
                 shows: [{
                   ids: { imdb: imdbId },
@@ -1736,12 +1776,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
             // For series rating (no specific episode)
             response = await fetch('https://api.trakt.tv/sync/ratings', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-                'trakt-api-version': '2',
-                'trakt-api-key': clientId
-              },
+              headers: baseHeaders,
               body: JSON.stringify({
                 shows: [{
                   ids: { imdb: imdbId },
@@ -1768,12 +1803,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         if (type === 'movie') {
           response = await fetch('https://api.trakt.tv/sync/ratings/remove', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               movies: [{ ids: { imdb: imdbId } }]
             })
@@ -1789,12 +1819,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
           if (season && episode) {
             response = await fetch('https://api.trakt.tv/sync/ratings/remove', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-                'trakt-api-version': '2',
-                'trakt-api-key': clientId
-              },
+              headers: baseHeaders,
               body: JSON.stringify({
                 shows: [{
                   ids: { imdb: imdbId },
@@ -1817,12 +1842,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
           } else {
             response = await fetch('https://api.trakt.tv/sync/ratings/remove', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-                'trakt-api-version': '2',
-                'trakt-api-key': clientId
-              },
+              headers: baseHeaders,
               body: JSON.stringify({
                 shows: [{ ids: { imdb: imdbId } }]
               })
@@ -1843,12 +1863,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         if (type === 'movie') {
           response = await fetch('https://api.trakt.tv/sync/watchlist', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               movies: [{ ids: { imdb: imdbId } }]
             })
@@ -1863,12 +1878,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         } else if (type === 'series') {
           response = await fetch('https://api.trakt.tv/sync/watchlist', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               shows: [{ ids: { imdb: imdbId } }]
             })
@@ -1887,12 +1897,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         if (type === 'movie') {
           response = await fetch('https://api.trakt.tv/sync/watchlist/remove', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               movies: [{ ids: { imdb: imdbId } }]
             })
@@ -1907,12 +1912,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         } else if (type === 'series') {
           response = await fetch('https://api.trakt.tv/sync/watchlist/remove', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-              'trakt-api-version': '2',
-              'trakt-api-key': clientId
-            },
+            headers: baseHeaders,
             body: JSON.stringify({
               shows: [{ ids: { imdb: imdbId } }]
             })
@@ -1955,7 +1955,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
 }
 
 // ============================================
-// Stream Object Creator 
+// Stream Object Creator
 // ============================================
 
 async function createStreamObject(title, action, type, imdbId, rating = null, season = null, episode = null, config = '', year = null, userConfig = null, isCurrentRating = false) {
