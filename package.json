@@ -1,7 +1,7 @@
 {
-  "name": "stremio-trakt-sync-rating",
-  "version": "2.2.0",
-  "description": "Trakt sync and rating addon for Stremio - Cloud Ready",
+  "name": "trakt-sync-stremio-addon",
+  "version": "2.5.0",
+  "description": "Trakt sync Stremio addon",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -31,6 +31,6 @@
     "rating",
     "streaming"
   ],
-  "author": "Your Name",
+  "author": "jbrockerville",
   "license": "MIT"
 }

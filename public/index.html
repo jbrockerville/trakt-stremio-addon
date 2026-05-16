@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trakt Sync & Rate - Stremio Addon</title>
+    <title>Trakt Sync - Stremio Addon</title>
     <style>
         * {
             margin: 0;
@@ -806,7 +806,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎬 Trakt Sync & Rate v2.4.0</h1>
+            <h1>🎬 Trakt Sync v2.5.0</h1>
             <p class="tagline">Create your personalized Stremio addon to sync watched states, rate content, and manage watchlist on Trakt.tv with persistent Upstash Redis storage</p>
             <div class="info-box">
                 <strong>🆕 NEW FEATURES:</strong> 
@@ -953,7 +953,7 @@
             </div>
 
             <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
-                <strong>💡 Important:</strong> Without Upstash Redis, Trakt tokens expire every 3 months and you'll need to reconnect. With Upstash, your connection remains persistent. <strong>v2.4.0 now includes "Current Rating Display", "Remove Rating" and "Drag & Drop Stream Ordering" features!</strong>
+                <strong>💡 Important:</strong> Without Upstash Redis, Trakt tokens expire every 3 months and you'll need to reconnect. With Upstash, your connection remains persistent. <strong>v2.5.0 now includes "Current Rating Display", "Remove Rating" and "Drag & Drop Stream Ordering" features!</strong>
             </div>
         </section>
 
@@ -970,7 +970,7 @@
             <div class="form-group">
                 <label for="addonName">Addon Display Name</label>
                 <div id="addonNamePreview" style="background: rgba(15, 23, 42, 0.8); border-radius: 10px; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    Trakt Sync & Rate
+                    Trakt Sync
                 </div>
             </div>
 
@@ -1106,6 +1106,11 @@
             <div class="checkbox-group">
                 <input type="checkbox" id="markAsPlayedOnRate">
                 <label for="markAsPlayedOnRate">Automatically mark as played when rating</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="markWatchedOnRelease">
+                <label for="markWatchedOnRelease">Mark as watched on release date (use Trakt 'released')</label>
             </div>
             
             <div class="new-feature">
@@ -1492,10 +1497,10 @@
 
         <!-- Footer -->
         <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #64748b; font-size: 0.9rem;">
-            <p>Trakt Sync & Rate v2.4.0 - A Stremio Community Addon with Upstash Redis Support</p>
+            <p>Trakt Sync v2.5.0 - A Stremio Community Addon with Upstash Redis Support</p>
             <p style="margin-top: 10px;">
                 Need help? Check the
-                <a href="https://github.com/ericvlog/trakt-sync-rating-addon" style="color: #60a5fa; text-decoration: none;" target="_blank">
+                <a href="https://github.com/jbrockerville/trakt-stremio-addon" style="color: #60a5fa; text-decoration: none;" target="_blank">
                     GitHub Repository
                 </a>
                 |
@@ -1564,6 +1569,7 @@
         let selectedStats = ['plays', 'comments', 'watchers'];
         let previewRatingValue = 5;
         let markAsPlayedOnRate = false;
+        let markWatchedOnRelease = false;
         let enableWatchlist = true;
         let enableRemoveFromWatchlist = true;
         let keepSingleWatchedState = false;
@@ -1627,6 +1633,7 @@
         const emojiZapRadio = document.getElementById('emojiZap');
         const enableRatingsCheckbox = document.getElementById('enableRatings');
         const markAsPlayedOnRateCheckbox = document.getElementById('markAsPlayedOnRate');
+        const markWatchedOnReleaseCheckbox = document.getElementById('markWatchedOnRelease');
         const ratingSection = document.getElementById('ratingSection');
         const ratingPresetsDiv = document.getElementById('ratingPresets');
         const selectedCountSpan = document.getElementById('selectedCount');
@@ -1816,6 +1823,11 @@
 
             markAsPlayedOnRateCheckbox.addEventListener('change', function() {
                 markAsPlayedOnRate = this.checked;
+                saveData();
+            });
+
+            markWatchedOnReleaseCheckbox.addEventListener('change', function() {
+                markWatchedOnRelease = this.checked;
                 saveData();
             });
 
@@ -2065,9 +2077,9 @@
         function updateAddonNamePreview() {
             const showUsername = showUsernameCheckbox.checked;
             if (showUsername && currentUsername) {
-                addonNamePreview.textContent = `Trakt Sync & Rate (${currentUsername})`;
+                addonNamePreview.textContent = `Trakt Sync (${currentUsername})`;
             } else {
-                addonNamePreview.textContent = `Trakt Sync & Rate`;
+                addonNamePreview.textContent = `Trakt Sync`;
             }
         }
 
@@ -2608,6 +2620,7 @@
                 ratingPattern: selectedRatingPattern,
                 statsFormat: selectedStatsFormat,
                 selectedStats: selectedStats,
+                markWatchedOnRelease: markWatchedOnReleaseCheckbox.checked,
                 markAsPlayedOnRate: markAsPlayedOnRateCheckbox.checked,
                 streamOrder: streamOrder // Include the stream order
             };
@@ -2730,6 +2743,10 @@
                 keepSingleWatchedStateCheckbox.checked = false;
                 enableRatingsCheckbox.checked = true;
                 markAsPlayedOnRateCheckbox.checked = false;
+                markWatchedOnReleaseCheckbox.checked = false;
+
+                // Reset state for the new option
+                markWatchedOnRelease = false;
 
                 // Reset state variables
                 selectedRatings = [1,2,3,4,5,6,7,8,9,10]; // now all selected
@@ -2873,6 +2890,10 @@
                     }
                     if (data.enableRatings !== undefined) enableRatingsCheckbox.checked = data.enableRatings;
                     if (data.markAsPlayedOnRate !== undefined) markAsPlayedOnRateCheckbox.checked = data.markAsPlayedOnRate;
+                    if (data.markWatchedOnRelease !== undefined) {
+                        markWatchedOnReleaseCheckbox.checked = data.markWatchedOnRelease;
+                        markWatchedOnRelease = data.markWatchedOnRelease;
+                    }
                     if (data.ratingStyle) selectedRatingStyle = data.ratingStyle;
                     if (data.ratingPattern !== undefined) selectedRatingPattern = data.ratingPattern;
                     if (data.statsFormat !== undefined) selectedStatsFormat = data.statsFormat;
@@ -2984,6 +3005,7 @@
                 keepSingleStateDisplay: keepSingleStateDisplay,
                 keepSingleStateEmoji: keepSingleStateEmoji,
                 enableRatings: enableRatingsCheckbox.checked,
+                markWatchedOnRelease: markWatchedOnReleaseCheckbox.checked,
                 markAsPlayedOnRate: markAsPlayedOnRateCheckbox.checked,
                 ratingStyle: selectedRatingStyle,
                 ratingPattern: selectedRatingPattern,
