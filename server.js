@@ -28,10 +28,11 @@ if (!SERVER_URL) {
 // ============================================
 // CDN Configuration
 // ============================================
-const CDN_BASE = "https://cdn.jsdelivr.net/gh/ericvlog/trakt-sync-rating-addon@main/public";
+const CDN_BASE = "https://cdn.jsdelivr.net/gh/jbrockerville/trakt-stremio-addon@main/public";
 const LOGO_URL = `${CDN_BASE}/logo.png`;
 const BACKGROUND_URL = `${CDN_BASE}/background.png`;
 const ICON_URL = `${CDN_BASE}/icon.png`;
+const STREAM_URL = `${CDN_BASE}/stream.mp4`;
 
 // ============================================
 // CORS Middleware
@@ -1458,7 +1459,7 @@ async function deleteOlderWatchedStates(imdbId, type, accessToken, clientId, tit
 // Trakt API Function (UPDATED with anti-block headers for all actions)
 // ============================================
 
-async function makeTraktRequest(action, type, imdbId, title, userConfig, rating = null, season = null, episode = null) {
+async function makeTraktRequest(action, type, imdbId, title, userConfig, rating = null, season = null, episode = null, watchedAt = null) {
   try {
     console.log(`[TRAKT] Making ${action} request for ${type}: ${imdbId} - "${title}"`);
     console.log(`[TRAKT] Season: ${season}, Episode: ${episode}, Rating: ${rating}`);
@@ -1506,11 +1507,14 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
         }
 
         if (type === 'movie') {
+          const movieEntry = { ids: { imdb: imdbId } };
+          if (watchedAt) movieEntry.watched_at = watchedAt;
+
           response = await fetch('https://api.trakt.tv/sync/history', {
             method: 'POST',
             headers: baseHeaders,
             body: JSON.stringify({
-              movies: [{ ids: { imdb: imdbId } }]
+              movies: [movieEntry]
             })
           });
 
@@ -1524,6 +1528,9 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
             message += ` (cleaned duplicates)`;
           }
         } else if (type === 'series') {
+          const episodeEntry = { number: parseInt(episode) };
+          if (watchedAt) episodeEntry.watched_at = watchedAt;
+
           response = await fetch('https://api.trakt.tv/sync/history', {
             method: 'POST',
             headers: baseHeaders,
@@ -1532,9 +1539,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
                 ids: { imdb: imdbId },
                 seasons: [{
                   number: parseInt(season),
-                  episodes: [{
-                    number: parseInt(episode)
-                  }]
+                  episodes: [episodeEntry]
                 }]
               }]
             })
@@ -1655,11 +1660,14 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
               await new Promise(resolve => setTimeout(resolve, 500));
 
               // Now mark as watched
+              const movieEntryBeforeRating = { ids: { imdb: imdbId } };
+              if (watchedAt) movieEntryBeforeRating.watched_at = watchedAt;
+
               const watchResponse = await fetch('https://api.trakt.tv/sync/history', {
                 method: 'POST',
                 headers: baseHeaders,
                 body: JSON.stringify({
-                  movies: [{ ids: { imdb: imdbId } }]
+                  movies: [movieEntryBeforeRating]
                 })
               });
 
@@ -1716,6 +1724,9 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
                 await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Now mark as watched
+                const episodeEntryBeforeRating = { number: parseInt(episode) };
+                if (watchedAt) episodeEntryBeforeRating.watched_at = watchedAt;
+
                 const watchResponse = await fetch('https://api.trakt.tv/sync/history', {
                   method: 'POST',
                   headers: baseHeaders,
@@ -1724,9 +1735,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
                       ids: { imdb: imdbId },
                       seasons: [{
                         number: parseInt(season),
-                        episodes: [{
-                          number: parseInt(episode)
-                        }]
+                        episodes: [episodeEntryBeforeRating]
                       }]
                     }]
                   })
@@ -2086,6 +2095,16 @@ async function createStreamObject(title, action, type, imdbId, rating = null, se
     episode: episode || ''
   });
 
+  // If user opted to mark watched on release date, add the sentinel
+  const markWatchedOnRelease = decodedConfig?.markWatchedOnRelease || false;
+  if (markWatchedOnRelease) {
+    if (action === 'mark_watched') {
+      params.append('watched_at', 'released');
+    } else if (action === 'rate_only' && decodedConfig?.markAsPlayedOnRate) {
+      params.append('watched_at', 'released');
+    }
+  }
+
   const finalVideoUrl = `${SERVER_URL}/configured/${config}/trakt-action?${params.toString()}`;
 
   return {
@@ -2162,8 +2181,8 @@ app.get("/manifest.json", (req, res) => {
 
   const manifest = {
     id: "org.stremio.trakt",
-    version: "2.4.0",
-    name: "Trakt Sync & Rate",
+    version: "2.5.0",
+    name: "Trakt Sync",
     description: "Sync watched states, rate content, and manage watchlist on Trakt.tv - configure your instance with Upstash Redis for persistent connection",
     resources: ["stream"],
     types: ["movie", "series"],
@@ -2207,14 +2226,14 @@ app.get("/configured/:config/manifest.json", (req, res) => {
       }
     }
 
-    let addonName = "Trakt Sync & Rate";
+    let addonName = "Trakt Sync";
     if (showUsername && username) {
-      addonName = `Trakt Sync & Rate (${username})`;
+      addonName = `Trakt Sync (${username})`;
     }
 
     const manifest = {
       id: `org.stremio.trakt.${config}`,
-      version: "2.4.0",
+      version: "2.5.0",
       name: addonName,
       description: `Sync watched states, rate content, and manage watchlist on Trakt.tv${username ? ` - ${username}'s instance` : ''} with Upstash Redis persistent storage`,
       resources: ["stream"],
@@ -2243,8 +2262,8 @@ app.get("/configured/:config/manifest.json", (req, res) => {
 
     const fallbackManifest = {
       id: "org.stremio.trakt",
-      version: "2.4.0",
-      name: "Trakt Sync & Rate",
+      version: "2.5.0",
+      name: "Trakt Sync",
       description: "Sync watched states, rate content, and manage watchlist on Trakt.tv",
       resources: ["stream"],
       types: ["movie", "series"],
@@ -2480,14 +2499,13 @@ app.get("/configure", (req, res) => {
 
 app.get("/configured/:config/trakt-action", async (req, res) => {
   const { config } = req.params;
-  const { action, type, imdbId, title, season, episode, rating } = req.query;
+  const { action, type, imdbId, title, season, episode, rating, watched_at } = req.query;
 
   console.log(`[TRAKT-ACTION] Click detected! Executing immediately...`);
   console.log(`  Action: ${action}, Type: ${type}, IMDb: ${imdbId}`);
   console.log(`  Title: ${decodeURIComponent(title)}`);
 
-  // Using the proven working video URL from Overseerr
-  const waitUrl = "https://cdn.jsdelivr.net/gh/ericvlog/material@main/stream1.mp4";
+  const waitUrl = STREAM_URL;
 
   setTimeout(async () => {
     try {
@@ -2503,7 +2521,8 @@ app.get("/configured/:config/trakt-action", async (req, res) => {
           userConfig,
           rating,
           season,
-          episode
+          episode,
+          watched_at
         );
 
         if (result.success) {
@@ -2548,7 +2567,7 @@ app.get("/health", (req, res) => {
     pending_requests: pendingRequests.size,
     oauth_states: oauthStates.size,
     environment: process.env.NODE_ENV || 'development',
-    version: '2.4.0',
+    version: '2.5.0',
     features: 'Upstash Redis, Trakt Sync, Ratings, Watchlist, Keep Single Watched State, Current Rating Display, Remove Rating, Custom Stream Ordering'
   });
 });
@@ -2581,7 +2600,7 @@ app.get("/cleanup", (req, res) => {
 
 if (process.env.NODE_ENV !== 'production' || process.env.RUN_SERVER) {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Trakt Addon Server Started v2.4.0`);
+    console.log(`🚀 Trakt Sync Stremio Addon Server Started v2.5.0`);
     console.log(`📋 Configuration: ${SERVER_URL}/configure`);
     console.log(`📦 Default Manifest: ${SERVER_URL}/manifest.json`);
     console.log(`📦 Configured Manifest Example: ${SERVER_URL}/configured/eyJjbGllbnRJZCI6Ii4uLiJ9/manifest.json`);
@@ -2592,16 +2611,16 @@ if (process.env.NODE_ENV !== 'production' || process.env.RUN_SERVER) {
     console.log(`🧹 Cleanup: ${SERVER_URL}/cleanup`);
     console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`⚡ Server URL: ${SERVER_URL}`);
-    console.log(`🖼️  Images: Logo: ${LOGO_URL}, Background: ${BACKGROUND_URL}`);
+    console.log(`🖼️ Images: Logo: ${LOGO_URL}, Background: ${BACKGROUND_URL}`);
     console.log(`🔧 Features: Watched/Unwatched, Season Watched, Ratings, Watchlist, Keep Single State`);
     console.log(`🎨 Rating Patterns: Original, Pattern 1, Pattern 6`);
     console.log(`📊 Stats Display: Customizable Trakt stats (choose any 3)`);
     console.log(`🔐 Persistent Storage: Upstash Redis for 90-day token storage`);
-    console.log(`⚠️  Fallback System: Local cache when Upstash is unreachable`);
-    console.log(`🎬 Video: Using Overseerr wait.mp4 video (proven to work with Stremio)`);
+    console.log(`⚠️ Fallback System: Local cache when Upstash is unreachable`);
+    console.log(`🎬 Video: ${STREAM_URL}`);
     console.log(`🔄 Keep Single State: Removes duplicates when marking as watched`);
     console.log(`⭐ Current Rating Display - Shows your existing ratings in Stremio`);
-    console.log(`🗑️  Remove Rating Option - Single stream for removing existing ratings (no duplicates)`);
+    console.log(`🗑️ Remove Rating Option - Single stream for removing existing ratings (no duplicates)`);
     console.log(`📋 NEW: Custom Stream Ordering - Drag and drop to reorder streams in Stremio`);
     console.log(`\n✅ IMPORTANT: Fixed user rating error and implemented custom stream ordering!`);
   });

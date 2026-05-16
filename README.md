@@ -1,4 +1,4 @@
-# Stremio Trakt Sync & Rating Addon
+# Trakt Sync Stremio Addon
 
 A Stremio addon for syncing watched states and ratings with Trakt.tv.
 
