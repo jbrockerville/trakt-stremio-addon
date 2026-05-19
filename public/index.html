@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -523,6 +524,11 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
+        /* Space between Connect to Trakt button and the Trakt connection status */
+        #mainAuthStatus {
+            margin-top: 8px;
+        }
+
         /* Result Section */
         .result-section {
             background: rgba(16, 185, 129, 0.1);
@@ -589,6 +595,7 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+
             .rating-style-options,
             .stats-selection {
                 flex-direction: column;
@@ -731,7 +738,7 @@
             margin-top: -5px;
             margin-bottom: 10px;
         }
-        
+
         .new-feature {
             background: rgba(245, 158, 11, 0.1);
             border-left: 4px solid #f59e0b;
@@ -739,7 +746,7 @@
             margin-top: 10px;
             border-radius: 0 8px 8px 0;
         }
-        
+
         .new-feature-label {
             display: inline-block;
             background: #f59e0b;
@@ -760,6 +767,7 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .sortable-item {
             padding: 12px 16px;
             margin: 4px 0;
@@ -773,56 +781,58 @@
             color: #cbd5e1;
             transition: background 0.2s;
         }
+
         .sortable-item:hover {
             background: rgba(51, 65, 85, 0.9);
         }
+
         .sortable-item .drag-handle {
             cursor: grab;
             font-size: 1.2rem;
             color: #60a5fa;
             margin-right: 8px;
         }
+
         .sortable-item .item-name {
             flex: 1;
         }
+
         .sortable-item.disabled {
             opacity: 0.5;
             pointer-events: none;
         }
+
         .sortable-ghost {
             opacity: 0.4;
             background: #2d3b4f;
             border: 2px dashed #60a5fa;
         }
+
         .sortable-drag {
             opacity: 0.8;
             transform: rotate(2deg);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
     </style>
     <!-- SortableJS for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1>🎬 Trakt Sync v2.5.0</h1>
-            <p class="tagline">Create your personalized Stremio addon to sync watched states, rate content, and manage watchlist on Trakt.tv with persistent Upstash Redis storage</p>
-            <div class="info-box">
-                <strong>🆕 NEW FEATURES:</strong> 
-                <br>1. <strong>Display Current Ratings</strong> - See your existing ratings directly in Stremio
-                <br>2. <strong>Remove Rating Option</strong> - Easily remove ratings you've previously set
-                <br>3. <strong>Drag & Drop Stream Ordering</strong> - Arrange the order of stream tabs to your preference
-            </div>
+            <p class="tagline">A Stremio addon for syncing watched states, ratings, and watchlists with Trakt.tv.</p>
         </header>
 
         <!-- Authentication Section -->
         <section class="section">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                 </svg>
                 Authentication & Storage
             </h2>
@@ -835,7 +845,8 @@
                         <span class="tooltiptext">
                             <strong>Trakt tokens expire every 3 months!</strong><br><br>
                             For persistent connection, get a free Redis database from:<br>
-                            <a href="https://upstash.com/?ref=stremio-trakt" target="_blank" class="info-link">https://upstash.com/</a><br><br>
+                            <a href="https://upstash.com/?ref=stremio-trakt" target="_blank"
+                                class="info-link">https://upstash.com/</a><br><br>
                             Steps:<br>
                             1. Create free account at Upstash<br>
                             2. Create a new Redis database<br>
@@ -871,20 +882,29 @@
 
             <div class="btn-group">
                 <button class="btn btn-small btn-secondary" onclick="testUpstashConnection()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
                     </svg>
                     Test Upstash Connection
                 </button>
-                <span id="upstashStatus" style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; font-size: 0.9rem;"></span>
+                <span id="upstashStatus"
+                    style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; font-size: 0.9rem;"></span>
+            </div>
+
+            <div
+                style="margin-top: 8px; margin-bottom: 24px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <strong>💡 Important:</strong> Without Upstash Redis, Trakt tokens expire every 3 months and you'll need
+                to reconnect. With Upstash, your connection remains persistent.
             </div>
 
             <!-- Trakt Client ID (now above Client Secret) -->
             <div class="form-group">
                 <label for="clientId">
                     Trakt Client ID
-                    <a href="https://trakt.tv/oauth/applications" target="_blank" class="info-link" style="margin-left: 5px; text-decoration: none; border-bottom: 1px dashed #60a5fa;">
+                    <a href="https://trakt.tv/oauth/applications" target="_blank" class="info-link"
+                        style="margin-left: 5px; text-decoration: none; border-bottom: 1px dashed #60a5fa;">
                         (Get it here)
                     </a>
                     <span class="tooltip" style="margin-left: 5px;">
@@ -905,7 +925,8 @@
             <div class="form-group">
                 <label for="clientSecret">
                     Trakt Client Secret
-                    <a href="https://trakt.tv/oauth/applications" target="_blank" class="info-link" style="margin-left: 5px; text-decoration: none; border-bottom: 1px dashed #60a5fa;">
+                    <a href="https://trakt.tv/oauth/applications" target="_blank" class="info-link"
+                        style="margin-left: 5px; text-decoration: none; border-bottom: 1px dashed #60a5fa;">
                         (Get it here)
                     </a>
                     <span class="tooltip" style="margin-left: 5px;">
@@ -922,7 +943,8 @@
             <div class="form-group">
                 <label for="tmdbKey">
                     TMDB API Key (Optional)
-                    <a href="https://www.themoviedb.org/settings/api" target="_blank" class="info-link" style="margin-left: 5px; text-decoration: none; border-bottom: 1px dashed #60a5fa;">
+                    <a href="https://www.themoviedb.org/settings/api" target="_blank" class="info-link"
+                        style="margin-left: 5px; text-decoration: none; border-bottom: 1px dashed #60a5fa;">
                         (Get it here)
                     </a>
                     <span class="tooltip" style="margin-left: 5px;">
@@ -938,10 +960,11 @@
 
             <div class="btn-group">
                 <button class="btn" onclick="startAuth()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                        <polyline points="10 17 15 12 10 7"/>
-                        <line x1="15" y1="12" x2="3" y2="12"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                        <polyline points="10 17 15 12 10 7" />
+                        <line x1="15" y1="12" x2="3" y2="12" />
                     </svg>
                     Connect to Trakt
                 </button>
@@ -951,25 +974,24 @@
                 <span class="upstash-indicator upstash-warning"></span>
                 Not connected to Trakt
             </div>
-
-            <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
-                <strong>💡 Important:</strong> Without Upstash Redis, Trakt tokens expire every 3 months and you'll need to reconnect. With Upstash, your connection remains persistent. <strong>v2.5.0 now includes "Current Rating Display", "Remove Rating" and "Drag & Drop Stream Ordering" features!</strong>
-            </div>
         </section>
 
         <!-- Addon Settings Section -->
         <section class="section">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" />
                 </svg>
                 Addon Settings
             </h2>
 
             <div class="form-group">
                 <label for="addonName">Addon Display Name</label>
-                <div id="addonNamePreview" style="background: rgba(15, 23, 42, 0.8); border-radius: 10px; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div id="addonNamePreview"
+                    style="background: rgba(15, 23, 42, 0.8); border-radius: 10px; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
                     Trakt Sync
                 </div>
             </div>
@@ -983,12 +1005,13 @@
         <!-- Features Section -->
         <section class="section">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20 12 20 22 4 22 4 12"/>
-                    <rect x="2" y="7" width="20" height="5"/>
-                    <line x1="12" y1="22" x2="12" y2="7"/>
-                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
-                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <polyline points="20 12 20 22 4 22 4 12" />
+                    <rect x="2" y="7" width="20" height="5" />
+                    <line x1="12" y1="22" x2="12" y2="7" />
+                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
                 </svg>
                 Features to Enable
             </h2>
@@ -1022,7 +1045,7 @@
             <div class="checkbox-group">
                 <input type="checkbox" id="showCurrentRating" checked>
                 <label for="showCurrentRating">
-                    <strong>⭐ Display current rating in Stremio</strong>
+                    <strong>Display current rating in Stremio</strong>
                 </label>
             </div>
             <div class="feature-description">
@@ -1034,7 +1057,7 @@
             <div class="checkbox-group">
                 <input type="checkbox" id="enableRemoveRating" checked>
                 <label for="enableRemoveRating">
-                    <strong>🗑️ Enable "Remove Rating" option</strong>
+                    <strong>Enable "Remove Rating" option</strong>
                 </label>
             </div>
             <div class="feature-description">
@@ -1063,7 +1086,7 @@
                     <div style="display: flex; flex-direction: column; gap: 8px;">
                         <div>
                             <input type="radio" id="keepSingleInline" name="keepSingleDisplay" value="inline" checked>
-                            <label for="keepSingleInline">Show inline "Keeps only latest watched state"</label>
+                            <label for="keepSingleInline">Show inline "Keep last watched only"</label>
                         </div>
                         <div>
                             <input type="radio" id="keepSingleNewline" name="keepSingleDisplay" value="newline">
@@ -1078,7 +1101,7 @@
 
                 <!-- Emoji Selection for Keep Single State -->
                 <div style="margin-top: 12px;">
-                    <label for="keepSingleStateEmoji">Choose emoji style for "Keeps only latest watched state":</label>
+                    <label for="keepSingleStateEmoji">Choose emoji style for "Keep last watched only":</label>
                     <div style="margin-top: 8px; margin-left: 10px;">
                         <div style="display: flex; gap: 12px;">
                             <div>
@@ -1107,30 +1130,27 @@
                 <input type="checkbox" id="markAsPlayedOnRate">
                 <label for="markAsPlayedOnRate">Automatically mark as played when rating</label>
             </div>
-            
+
             <div class="checkbox-group">
                 <input type="checkbox" id="markWatchedOnRelease">
                 <label for="markWatchedOnRelease">Mark as watched on release date (use Trakt 'released')</label>
-            </div>
-            
-            <div class="new-feature">
-                <span class="new-feature-label">NEW</span>
-                <strong>Current Rating Feature:</strong> When you have already rated a movie or episode, it will appear as a stream option. Clicking it will remove your rating if "Remove Rating" is enabled.
             </div>
         </section>
 
         <!-- Stream Ordering Section (NEW) -->
         <section class="section">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="12" x2="21" y2="12"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <line x1="3" y1="18" x2="21" y2="18"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
                 </svg>
                 Stream Ordering (Drag & Drop)
             </h2>
             <p class="feature-description" style="margin-bottom: 10px;">
-                Drag the handles to reorder how the options appear in Stremio. The order you set here will be reflected in the stream list.
+                Drag the handles to reorder how the options appear in Stremio. The order you set here will be reflected
+                in the stream list.
             </p>
             <ul id="stream-order-list" class="sortable-list">
                 <!-- Will be populated by JavaScript -->
@@ -1143,8 +1163,10 @@
         <!-- Ratings Section -->
         <section id="ratingSection" class="section" style="display: block;">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
                 Ratings Configuration
             </h2>
@@ -1161,7 +1183,8 @@
                 <div class="btn-group">
                     <button class="btn btn-small btn-secondary" onclick="selectAllRatings()">Select All</button>
                     <button class="btn btn-small btn-secondary" onclick="clearAllRatings()">Clear All</button>
-                    <button class="btn btn-small btn-secondary" onclick="selectDefaultRatings()">Default (5, 7, 10)</button>
+                    <button class="btn btn-small btn-secondary" onclick="selectDefaultRatings()">Default (5, 7,
+                        10)</button>
                 </div>
             </div>
 
@@ -1247,17 +1270,20 @@
                 <div class="stats-format-options">
                     <div class="stats-format-option selected" id="stats-option-1" onclick="selectStatsFormat(1)">
                         <input type="radio" name="statsFormat" id="stats1" checked>
-                        <label for="stats1" style="display: inline;">Format 1: Compact Stats (👁️ 3.1k watchers - ▶️ 5.8k plays)</label>
+                        <label for="stats1" style="display: inline;">Format 1: Compact Stats (👁️ 3.1k watchers - ▶️
+                            5.8k plays)</label>
                     </div>
 
                     <div class="stats-format-option" id="stats-option-2" onclick="selectStatsFormat(2)">
                         <input type="radio" name="statsFormat" id="stats2">
-                        <label for="stats2" style="display: inline;">Format 2: Detailed Stats (👁️ watchers: 3.1k | ▶️ plays: 5.8k)</label>
+                        <label for="stats2" style="display: inline;">Format 2: Detailed Stats (👁️ watchers: 3.1k | ▶️
+                            plays: 5.8k)</label>
                     </div>
 
                     <div class="stats-format-option" id="stats-option-3" onclick="selectStatsFormat(3)">
                         <input type="radio" name="statsFormat" id="stats3">
-                        <label for="stats3" style="display: inline;">Format 3: Minimal Stats (👁️ 3.1k | ▶️ 5.8k)</label>
+                        <label for="stats3" style="display: inline;">Format 3: Minimal Stats (👁️ 3.1k | ▶️
+                            5.8k)</label>
                     </div>
 
                     <div class="stats-format-option" id="stats-option-4" onclick="selectStatsFormat(4)">
@@ -1267,7 +1293,8 @@
 
                     <div class="stats-format-option" id="stats-option-5" onclick="selectStatsFormat(5)">
                         <input type="radio" name="statsFormat" id="stats5">
-                        <label for="stats5" style="display: inline;">Format 5: Balanced Stats (👁️ 3.1k watching | ▶️ 5.8k played)</label>
+                        <label for="stats5" style="display: inline;">Format 5: Balanced Stats (👁️ 3.1k watching | ▶️
+                            5.8k played)</label>
                     </div>
                 </div>
             </div>
@@ -1343,15 +1370,16 @@
         <!-- Preview Section -->
         <section class="section">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-                    <line x1="7" y1="2" x2="7" y2="22"/>
-                    <line x1="17" y1="2" x2="17" y2="22"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <line x1="2" y1="7" x2="7" y2="7"/>
-                    <line x1="2" y1="17" x2="7" y2="17"/>
-                    <line x1="17" y1="17" x2="22" y2="17"/>
-                    <line x1="17" y1="7" x2="22" y2="7"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+                    <line x1="7" y1="2" x2="7" y2="22" />
+                    <line x1="17" y1="2" x2="17" y2="22" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <line x1="2" y1="7" x2="7" y2="7" />
+                    <line x1="2" y1="17" x2="7" y2="17" />
+                    <line x1="17" y1="17" x2="22" y2="17" />
+                    <line x1="17" y1="7" x2="22" y2="7" />
                 </svg>
                 Addon Preview
             </h2>
@@ -1411,10 +1439,11 @@
         <!-- Generate Addon Section -->
         <section class="section">
             <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 Generate Your Addon
             </h2>
@@ -1425,11 +1454,12 @@
 
             <div class="btn-group">
                 <button class="btn" onclick="generateAddonUrl()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 2v6h-6"/>
-                        <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-                        <path d="M3 22v-6h6"/>
-                        <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M21 2v6h-6" />
+                        <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                        <path d="M3 22v-6h6" />
+                        <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
                     </svg>
                     Generate Addon URL
                 </button>
@@ -1439,9 +1469,10 @@
         <!-- Result Section -->
         <div id="resultSection" class="result-section">
             <h2 class="section-title" style="color: #10b981;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
                 Your Addon is Ready!
             </h2>
@@ -1456,39 +1487,45 @@
 
             <div class="btn-group">
                 <button class="btn" onclick="installInStremioDesktop()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                        <line x1="8" y1="21" x2="16" y2="21"/>
-                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
                     </svg>
                     Install in Stremio Desktop
                 </button>
                 <button class="btn btn-secondary" onclick="installInStremioWeb()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <circle cx="12" cy="12" r="4"/>
-                        <line x1="21.17" y1="8" x2="12" y2="8"/>
-                        <line x1="3.95" y1="6.06" x2="8.54" y2="14"/>
-                        <line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="4" />
+                        <line x1="21.17" y1="8" x2="12" y2="8" />
+                        <line x1="3.95" y1="6.06" x2="8.54" y2="14" />
+                        <line x1="10.88" y1="21.94" x2="15.46" y2="14" />
                     </svg>
                     Install in Stremio Web
                 </button>
                 <button class="btn btn-secondary" onclick="copyToClipboard()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                     </svg>
                     Copy URL
                 </button>
                 <button class="btn btn-secondary" onclick="testAddon()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                     </svg>
                     Test Addon
                 </button>
                 <button class="btn btn-secondary" onclick="resetConfig()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38" />
                     </svg>
                     Reset Configuration
                 </button>
@@ -1500,11 +1537,13 @@
             <p>Trakt Sync v2.5.0 - A Stremio Community Addon with Upstash Redis Support</p>
             <p style="margin-top: 10px;">
                 Need help? Check the
-                <a href="https://github.com/jbrockerville/trakt-stremio-addon" style="color: #60a5fa; text-decoration: none;" target="_blank">
+                <a href="https://github.com/jbrockerville/trakt-stremio-addon"
+                    style="color: #60a5fa; text-decoration: none;" target="_blank">
                     GitHub Repository
                 </a>
                 |
-                <a href="https://upstash.com/docs/redis/overall/getstarted" style="color: #60a5fa; text-decoration: none;" target="_blank">
+                <a href="https://upstash.com/docs/redis/overall/getstarted"
+                    style="color: #60a5fa; text-decoration: none;" target="_blank">
                     Upstash Redis Guide
                 </a>
             </p>
@@ -1526,10 +1565,11 @@
 
             <div class="btn-group">
                 <button class="btn" onclick="openTraktAuth()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                        <polyline points="15 3 21 3 21 9"/>
-                        <line x1="10" y1="14" x2="21" y2="3"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
                     </svg>
                     Open Trakt.tv
                 </button>
@@ -1543,9 +1583,10 @@
 
             <div class="btn-group">
                 <button class="btn" onclick="submitAuthCode()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13"/>
-                        <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13" />
+                        <path d="M22 2l-7 20-4-9-9-4 20-7z" />
                     </svg>
                     Submit Code
                 </button>
@@ -1562,7 +1603,7 @@
         let traktTokens = null;
         let currentUsername = 'TraktUser';
         // Default to all ratings (1-10)
-        let selectedRatings = [1,2,3,4,5,6,7,8,9,10];
+        let selectedRatings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         let selectedRatingStyle = 'stars';
         let selectedRatingPattern = 0;
         let selectedStatsFormat = 1;
@@ -1601,10 +1642,10 @@
             'current_rating': '⭐ Current Rating',
             'rating': '📊 Rate Options',
             'watched': '✅ Mark as Watched',
-            'season_watched': '📅 Mark Season Watched',
-            'series_watched': '📺 Mark Series Watched',
-            'add_to_watchlist': '📥 Add to Watchlist',
-            'remove_from_watchlist': '📤 Remove from Watchlist',
+            'season_watched': '✅ Mark season as Watched',
+            'series_watched': '✅ Mark series as Watched',
+            'add_to_watchlist': '➕ Add to Watchlist',
+            'remove_from_watchlist': '➖ Remove from Watchlist',
             'unwatched': '❌ Mark as Unwatched'
         };
 
@@ -1708,7 +1749,7 @@
                 handle: '.drag-handle',
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
-                onEnd: function(evt) {
+                onEnd: function (evt) {
                     // Update streamOrder array based on new order
                     const newOrder = [];
                     const items = streamOrderList.querySelectorAll('.sortable-item');
@@ -1742,7 +1783,7 @@
         function init() {
             // Set up event listeners
             showUsernameCheckbox.addEventListener('change', updateAddonNamePreview);
-            enableRatingsCheckbox.addEventListener('change', function() {
+            enableRatingsCheckbox.addEventListener('change', function () {
                 ratingSection.style.display = this.checked ? 'block' : 'none';
                 updatePreview();
                 saveData();
@@ -1751,32 +1792,32 @@
             enableWatchedCheckbox.addEventListener('change', updatePreviewAndSave);
             enableUnwatchedCheckbox.addEventListener('change', updatePreviewAndSave);
             enableSeasonWatchedCheckbox.addEventListener('change', updatePreviewAndSave);
-            enableWatchlistCheckbox.addEventListener('change', function() {
+            enableWatchlistCheckbox.addEventListener('change', function () {
                 enableWatchlist = this.checked;
                 updatePreview();
                 saveData();
             });
-            enableRemoveFromWatchlistCheckbox.addEventListener('change', function() {
+            enableRemoveFromWatchlistCheckbox.addEventListener('change', function () {
                 enableRemoveFromWatchlist = this.checked;
                 updatePreview();
                 saveData();
             });
-            
+
             // New features event listeners
-            showCurrentRatingCheckbox.addEventListener('change', function() {
+            showCurrentRatingCheckbox.addEventListener('change', function () {
                 showCurrentRating = this.checked;
                 updatePreview();
                 saveData();
             });
-            
-            enableRemoveRatingCheckbox.addEventListener('change', function() {
+
+            enableRemoveRatingCheckbox.addEventListener('change', function () {
                 enableRemoveRating = this.checked;
                 updatePreview();
                 saveData();
             });
 
             // Keep single state checkbox
-            keepSingleWatchedStateCheckbox.addEventListener('change', function() {
+            keepSingleWatchedStateCheckbox.addEventListener('change', function () {
                 keepSingleWatchedState = this.checked;
                 if (this.checked) {
                     keepSingleStateDisplayGroup.style.display = 'block';
@@ -1788,51 +1829,51 @@
             });
 
             // Keep single state display options
-            keepSingleInlineRadio.addEventListener('change', function() {
+            keepSingleInlineRadio.addEventListener('change', function () {
                 if (this.checked) keepSingleStateDisplay = 'inline';
                 updatePreview();
                 saveData();
             });
-            keepSingleNewlineRadio.addEventListener('change', function() {
+            keepSingleNewlineRadio.addEventListener('change', function () {
                 if (this.checked) keepSingleStateDisplay = 'newline';
                 updatePreview();
                 saveData();
             });
-            keepSingleNoneRadio.addEventListener('change', function() {
+            keepSingleNoneRadio.addEventListener('change', function () {
                 if (this.checked) keepSingleStateDisplay = 'none';
                 updatePreview();
                 saveData();
             });
 
             // Emoji selection event listeners
-            emojiRefreshRadio.addEventListener('change', function() {
+            emojiRefreshRadio.addEventListener('change', function () {
                 if (this.checked) keepSingleStateEmoji = '🔄';
                 updatePreview();
                 saveData();
             });
-            emojiBroomRadio.addEventListener('change', function() {
+            emojiBroomRadio.addEventListener('change', function () {
                 if (this.checked) keepSingleStateEmoji = '🧹';
                 updatePreview();
                 saveData();
             });
-            emojiZapRadio.addEventListener('change', function() {
+            emojiZapRadio.addEventListener('change', function () {
                 if (this.checked) keepSingleStateEmoji = '⚡';
                 updatePreview();
                 saveData();
             });
 
-            markAsPlayedOnRateCheckbox.addEventListener('change', function() {
+            markAsPlayedOnRateCheckbox.addEventListener('change', function () {
                 markAsPlayedOnRate = this.checked;
                 saveData();
             });
 
-            markWatchedOnReleaseCheckbox.addEventListener('change', function() {
+            markWatchedOnReleaseCheckbox.addEventListener('change', function () {
                 markWatchedOnRelease = this.checked;
                 saveData();
             });
 
             // Rating slider
-            ratingSlider.addEventListener('input', function() {
+            ratingSlider.addEventListener('input', function () {
                 previewRatingValue = parseInt(this.value);
                 sliderValue.textContent = previewRatingValue;
                 updateRatingStyleVisuals();
@@ -1847,18 +1888,18 @@
             stat3Select.addEventListener('change', updateStats);
 
             // Upstash inputs
-            upstashUrlInput.addEventListener('change', function() {
+            upstashUrlInput.addEventListener('change', function () {
                 upstashUrl = this.value.trim();
                 saveData();
             });
 
-            upstashTokenInput.addEventListener('change', function() {
+            upstashTokenInput.addEventListener('change', function () {
                 upstashToken = this.value.trim();
                 saveData();
             });
 
             // Client secret input
-            clientSecretInput.addEventListener('change', function() {
+            clientSecretInput.addEventListener('change', function () {
                 clientSecret = this.value.trim();
                 saveData();
             });
@@ -1946,7 +1987,7 @@
 
             let previewText = '';
 
-            switch(selectedRatingPattern) {
+            switch (selectedRatingPattern) {
                 case 0:
                     previewText = `${visual}\n"The Matrix" ${previewRatingValue}/10`;
                     break;
@@ -1986,7 +2027,7 @@
                 };
             });
 
-            switch(selectedStatsFormat) {
+            switch (selectedStatsFormat) {
                 case 1: return formattedStats.map(s => `${s.emoji} ${s.value} ${s.name}`).join(' - ');
                 case 2: return formattedStats.map(s => `${s.emoji} ${s.name}: ${s.value}`).join(' | ');
                 case 3: return formattedStats.map(s => `${s.emoji} ${s.value}`).join(' | ');
@@ -2054,7 +2095,7 @@
 
         function generateRatingVisual(style, rating) {
             let visual = '';
-            switch(style) {
+            switch (style) {
                 case 'hearts':
                     for (let i = 1; i <= 10; i++) {
                         visual += i <= rating ? '❤️' : '🤍';
@@ -2117,7 +2158,7 @@
         }
 
         function selectAllRatings() {
-            selectedRatings = [1,2,3,4,5,6,7,8,9,10];
+            selectedRatings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
             generateRatingPresets();
             updateSelectedCount();
             updatePreview();
@@ -2133,7 +2174,7 @@
         }
 
         function selectDefaultRatings() {
-            selectedRatings = [5,7,10];
+            selectedRatings = [5, 7, 10];
             generateRatingPresets();
             updateSelectedCount();
             updatePreview();
@@ -2165,14 +2206,14 @@
             let movieStreams = 0;
 
             if (enableWatched) {
-                let watchedTitle = '✅ Mark "The Matrix" as Watched';
+                let watchedTitle = '✅ Mark as Watched';
                 if (keepSingleWatchedState) {
                     if (keepSingleStateDisplay === 'none') {
-                        watchedTitle = '✅ Mark "The Matrix" as Watched';
+                        watchedTitle = '✅ Mark as Watched';
                     } else if (keepSingleStateDisplay === 'newline') {
-                        watchedTitle = `✅ Mark "The Matrix" as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+                        watchedTitle = `✅ Mark as Watched\n${keepSingleStateEmoji} Keep last watched only`;
                     } else {
-                        watchedTitle = `✅ Mark "The Matrix" as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+                        watchedTitle = `✅ Mark as Watched ${keepSingleStateEmoji} Keep last watched only`;
                     }
                 }
                 movieWatchedHTML = `<div class="preview-item watched">${watchedTitle}</div>`;
@@ -2180,17 +2221,17 @@
             }
 
             if (enableUnwatched) {
-                movieUnwatchedHTML = '<div class="preview-item unwatched">❌ Mark "The Matrix" as Unwatched</div>';
+                movieUnwatchedHTML = '<div class="preview-item unwatched">❌ Mark as Unwatched</div>';
                 movieStreams += 1;
             }
 
             if (enableWatchlist) {
-                movieWatchlistHTML = '<div class="preview-item watchlist">📥 Add to Watchlist<br>🎬 "The Matrix" (1999)<br>✅ Add movie to your Trakt watchlist</div>';
+                movieWatchlistHTML = '<div class="preview-item watchlist">➕ Add to Watchlist</div>';
                 movieStreams += 1;
             }
 
             if (enableRemoveFromWatchlist) {
-                movieWatchlistHTML += '<div class="preview-item watchlist-remove">📤 Remove from Watchlist<br>🎬 "The Matrix" (1999)<br>🗑️ Remove movie from your Trakt watchlist</div>';
+                movieWatchlistHTML += '<div class="preview-item watchlist-remove">➖ Remove from Watchlist</div>';
                 movieStreams += 1;
             }
 
@@ -2198,7 +2239,7 @@
             if (showCurrentRating && previewRatingValue > 0) {
                 movieCurrentRatingHTML = `<div class="preview-item current-rating">${formatCurrentRatingPreview(previewRatingValue, 'movie', 'The Matrix', '1999')}</div>`;
                 movieStreams += 1;
-                
+
                 // Show remove rating option if enabled
                 if (enableRemoveRating) {
                     movieRemoveRatingHTML = `<div class="preview-item remove-rating">🗑️ Remove Rating<br>🎬 "The Matrix" (1999)<br>⚠️ Remove your ${previewRatingValue}/10 rating from Trakt</div>`;
@@ -2231,42 +2272,42 @@
             let seriesStreams = 0;
 
             if (enableWatched) {
-                let watchedTitle = `✅ Mark S1E1 of "Breaking Bad" as Watched`;
+                let watchedTitle = `✅ Mark episode as Watched`;
                 if (keepSingleWatchedState) {
                     if (keepSingleStateDisplay === 'none') {
-                        watchedTitle = `✅ Mark S1E1 of "Breaking Bad" as Watched`;
+                        watchedTitle = `✅ Mark episode as Watched`;
                     } else if (keepSingleStateDisplay === 'newline') {
-                        watchedTitle = `✅ Mark S1E1 of "Breaking Bad" as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+                        watchedTitle = `✅ Mark episode as Watched\n${keepSingleStateEmoji} Keep last watched only`;
                     } else {
-                        watchedTitle = `✅ Mark S1E1 of "Breaking Bad" as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+                        watchedTitle = `✅ Mark episode as Watched ${keepSingleStateEmoji} Keep last watched only`;
                     }
                 }
                 seriesWatchedHTML = `<div class="preview-item watched">${watchedTitle}</div>`;
                 seriesStreams += 1;
 
                 if (enableSeasonWatched) {
-                    let seasonTitle = `📅 Mark Season 1 of "Breaking Bad" as Watched`;
+                    let seasonTitle = `✅ Mark season as Watched`;
                     if (keepSingleWatchedState) {
                         if (keepSingleStateDisplay === 'none') {
-                            seasonTitle = `📅 Mark Season 1 of "Breaking Bad" as Watched`;
+                            seasonTitle = `✅ Mark season as Watched`;
                         } else if (keepSingleStateDisplay === 'newline') {
-                            seasonTitle = `📅 Mark Season 1 of "Breaking Bad" as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+                            seasonTitle = `✅ Mark season as Watched\n${keepSingleStateEmoji} Keep last watched only`;
                         } else {
-                            seasonTitle = `📅 Mark Season 1 of "Breaking Bad" as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+                            seasonTitle = `✅ Mark season as Watched ${keepSingleStateEmoji} Keep last watched only`;
                         }
                     }
                     seriesWatchedHTML += `<div class="preview-item season">${seasonTitle}</div>`;
                     seriesStreams += 1;
                 }
 
-                let seriesTitle = `📺 Mark Entire "Breaking Bad" Series as Watched`;
+                let seriesTitle = `✅ Mark series as Watched`;
                 if (keepSingleWatchedState) {
                     if (keepSingleStateDisplay === 'none') {
-                        seriesTitle = `📺 Mark Entire "Breaking Bad" Series as Watched`;
+                        seriesTitle = `✅ Mark series as Watched`;
                     } else if (keepSingleStateDisplay === 'newline') {
-                        seriesTitle = `📺 Mark Entire "Breaking Bad" Series as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+                        seriesTitle = `✅ Mark series as Watched\n${keepSingleStateEmoji} Keep last watched only`;
                     } else {
-                        seriesTitle = `📺 Mark Entire "Breaking Bad" Series as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+                        seriesTitle = `✅ Mark series as Watched ${keepSingleStateEmoji} Keep last watched only`;
                     }
                 }
                 seriesWatchedHTML += `<div class="preview-item watched">${seriesTitle}</div>`;
@@ -2274,17 +2315,17 @@
             }
 
             if (enableUnwatched) {
-                seriesWatchedHTML += `<div class="preview-item unwatched">❌ Mark S1E1 of "Breaking Bad" as Unwatched</div>`;
+                seriesWatchedHTML += `<div class="preview-item unwatched">❌ Mark episode as Unwatched</div>`;
                 seriesStreams += 1;
             }
 
             if (enableWatchlist) {
-                seriesWatchlistHTML = '<div class="preview-item watchlist">📥 Add to Watchlist<br>📺 "Breaking Bad" (Series)<br>✅ Add series to your Trakt watchlist</div>';
+                seriesWatchlistHTML = '<div class="preview-item watchlist">➕ Add to Watchlist</div>';
                 seriesStreams += 1;
             }
 
             if (enableRemoveFromWatchlist) {
-                seriesWatchlistHTML += '<div class="preview-item watchlist-remove">📤 Remove from Watchlist<br>📺 "Breaking Bad" (Series)<br>🗑️ Remove series from your Trakt watchlist</div>';
+                seriesWatchlistHTML += '<div class="preview-item watchlist-remove">➖ Remove from Watchlist</div>';
                 seriesStreams += 1;
             }
 
@@ -2292,7 +2333,7 @@
             if (showCurrentRating && previewRatingValue > 0) {
                 seriesCurrentRatingHTML = `<div class="preview-item current-rating">${formatCurrentRatingPreview(previewRatingValue, 'series', 'Breaking Bad', null, 1, 1)}</div>`;
                 seriesStreams += 1;
-                
+
                 // Show remove rating option if enabled
                 if (enableRemoveRating) {
                     seriesRemoveRatingHTML = `<div class="preview-item remove-rating">🗑️ Remove Rating<br>📺 S1E1 "Breaking Bad"<br>⚠️ Remove your ${previewRatingValue}/10 rating from Trakt</div>`;
@@ -2320,7 +2361,7 @@
             const visual = generateRatingVisual(selectedRatingStyle, rating);
             const statsLine = getStatsLinePreview(rating);
 
-            switch(selectedRatingPattern) {
+            switch (selectedRatingPattern) {
                 case 0:
                     if (type === 'movie') {
                         return `${visual}<br>"${title}" ${rating}/10<br>🗑️ Click to remove rating`;
@@ -2373,7 +2414,7 @@
                 }
             }
 
-            switch(selectedRatingPattern) {
+            switch (selectedRatingPattern) {
                 case 0:
                     if (type === 'movie') {
                         return `${visual}<br>"${title}" ${rating}/10${extraText}`;
@@ -2749,7 +2790,7 @@
                 markWatchedOnRelease = false;
 
                 // Reset state variables
-                selectedRatings = [1,2,3,4,5,6,7,8,9,10]; // now all selected
+                selectedRatings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // now all selected
                 selectedRatingStyle = 'stars';
                 selectedRatingPattern = 0;
                 selectedStatsFormat = 1;
@@ -3052,4 +3093,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,11 +1,11 @@
 # Trakt Sync Stremio Addon
 
-A Stremio addon for syncing watched states and ratings with Trakt.tv.
+A Stremio addon for syncing watched states, ratings, and watchlists with Trakt.tv.
 
 ## Features
 - ✅ Mark movies/episodes as watched on Trakt
 - ❌ Mark movies/episodes as unwatched
-- 📅 Mark entire seasons as watched
+- ✅ Mark entire seasons as watched
 - ⭐ Rate movies/episodes/series
 - 👤 Option to show/hide username in addon name
 - 🔐 OAuth authentication with Trakt

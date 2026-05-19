@@ -1969,7 +1969,7 @@ async function makeTraktRequest(action, type, imdbId, title, userConfig, rating 
 
 async function createStreamObject(title, action, type, imdbId, rating = null, season = null, episode = null, config = '', year = null, userConfig = null, isCurrentRating = false) {
   let streamTitle;
-  let streamName = "Trakt";
+  let streamName = "Trakt Sync";
 
   // Decode config to get user preferences
   let decodedConfig = userConfig;
@@ -2006,82 +2006,73 @@ async function createStreamObject(title, action, type, imdbId, rating = null, se
     if (type === 'movie') {
       if (keepSingleState) {
         if (keepSingleStateDisplay === 'none') {
-          streamTitle = `✅ Mark "${title}" as Watched`;
+          streamTitle = `✅ Mark as Watched`;
         } else if (keepSingleStateDisplay === 'newline') {
-          streamTitle = `✅ Mark "${title}" as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+          streamTitle = `✅ Mark as Watched\n${keepSingleStateEmoji} Keep last watched only`;
         } else {
-          streamTitle = `✅ Mark "${title}" as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+          streamTitle = `✅ Mark as Watched ${keepSingleStateEmoji} Keep last watched only`;
         }
       } else {
-        streamTitle = `✅ Mark "${title}" as Watched`;
+        streamTitle = `✅ Mark as Watched`;
       }
     } else if (season && episode) {
       if (keepSingleState) {
         if (keepSingleStateDisplay === 'none') {
-          streamTitle = `✅ Mark S${season}E${episode} as Watched`;
+          streamTitle = `✅ Mark episode as Watched`;
         } else if (keepSingleStateDisplay === 'newline') {
-          streamTitle = `✅ Mark S${season}E${episode} as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+          streamTitle = `✅ Mark episode as Watched\n${keepSingleStateEmoji} Keep last watched only`;
         } else {
-          streamTitle = `✅ Mark S${season}E${episode} as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+          streamTitle = `✅ Mark episode as Watched ${keepSingleStateEmoji}`;
         }
       } else {
-        streamTitle = `✅ Mark S${season}E${episode} as Watched`;
+        streamTitle = `✅ Mark episode as Watched`;
       }
     }
-    streamName = "Trakt Marks";
   } else if (action === 'mark_unwatched') {
     if (type === 'movie') {
-      streamTitle = `❌ Mark "${title}" as Unwatched`;
+      streamTitle = `❌ Mark as Unwatched`;
     } else if (season && episode) {
-      streamTitle = `❌ Mark S${season}E${episode} as Unwatched`;
+      streamTitle = `❌ Mark episode as Unwatched`;
     }
-    streamName = "Trakt Marks";
   } else if (action === 'mark_season_watched') {
     if (keepSingleState) {
       if (keepSingleStateDisplay === 'none') {
-        streamTitle = `📅 Mark Season ${season} of "${title}" as Watched`;
+        streamTitle = `✅ Mark season as Watched`;
       } else if (keepSingleStateDisplay === 'newline') {
-        streamTitle = `📅 Mark Season ${season} of "${title}" as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+        streamTitle = `✅ Mark season as Watched\n${keepSingleStateEmoji} Keep last watched only`;
       } else {
-        streamTitle = `📅 Mark Season ${season} of "${title}" as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+        streamTitle = `✅ Mark season as Watched ${keepSingleStateEmoji}`;
       }
     } else {
-      streamTitle = `📅 Mark Season ${season} of "${title}" as Watched`;
+      streamTitle = `✅ Mark season as Watched`;
     }
-    streamName = "Trakt Marks";
   } else if (action === 'mark_series_watched') {
     if (keepSingleState) {
       if (keepSingleStateDisplay === 'none') {
-        streamTitle = `📺 Mark Entire "${title}" Series as Watched`;
+        streamTitle = `✅ Mark series as Watched`;
       } else if (keepSingleStateDisplay === 'newline') {
-        streamTitle = `📺 Mark Entire "${title}" Series as Watched\n${keepSingleStateEmoji} Keeps only latest watched state`;
+        streamTitle = `✅ Mark series as Watched\n${keepSingleStateEmoji} Keep last watched only`;
       } else {
-        streamTitle = `📺 Mark Entire "${title}" Series as Watched ${keepSingleStateEmoji} Keeps only latest watched state`;
+        streamTitle = `✅ Mark series as Watched ${keepSingleStateEmoji}`;
       }
     } else {
-      streamTitle = `📺 Mark Entire "${title}" Series as Watched`;
+      streamTitle = `✅ Mark series as Watched`;
     }
-    streamName = "Trakt Marks";
   } else if (action === 'rate_only') {
     if (isCurrentRating) {
       // Current rating - show as "remove rating"
       streamTitle = await formatRatingTitle(ratingPattern, ratingStyle, rating, title, type, season, episode, year, decodedConfig, imdbId, true);
-      streamName = "Your Trakt Rating";  // Changed
     } else {
       // Regular rating option
       streamTitle = await formatRatingTitle(ratingPattern, ratingStyle, rating, title, type, season, episode, year, decodedConfig, imdbId, false);
-      streamName = "Rate on Trakt";  // Changed
     }
   } else if (action === 'remove_rating') {
     // For remove_rating action, show the current rating with remove option
     streamTitle = await formatRatingTitle(ratingPattern, ratingStyle, rating, title, type, season, episode, year, decodedConfig, imdbId, true);
-    streamName = "Your Trakt Rating";  // Changed
   } else if (action === 'add_to_watchlist') {
-    streamTitle = `📥 Add to Watchlist\n${mediaEmoji} "${title}" ${yearText}\n✅ Add ${mediaType} to your Trakt watchlist`;
-    streamName = "Trakt Watchlist";
+    streamTitle = `➕ Add to Watchlist`;
   } else if (action === 'remove_from_watchlist') {
-    streamTitle = `📤 Remove from Watchlist\n${mediaEmoji} "${title}" ${yearText}\n🗑️ Remove ${mediaType} from your Trakt watchlist`;
-    streamName = "Trakt Watchlist";
+    streamTitle = `➖ Remove from Watchlist`;
   }
 
   const params = new URLSearchParams({
